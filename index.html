@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galeri Video Kami</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            background-color: #ffe4e6; /* Merah muda keputihan */
+            color: #333;
+        }
+        header {
+            background-color: #ff6f91; /* Merah muda */
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        main {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h2 {
+            color: #ff6f91; /* Merah muda */
+            margin-bottom: 1rem;
+        }
+        input[type="file"], input[type="text"] {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        video {
+            width: 100%;
+            max-width: 700px;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            background-color: #ff6f91; /* Merah muda */
+            color: white;
+            padding: 1rem 0;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .video-container, .photo-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .video-item, .photo-item {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0.5rem;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .photo-container img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        /* Responsiveness */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.5rem;
+            }
+            main {
+                padding: 1rem;
+            }
+            input[type="file"], input[type="text"] {
+                font-size: 0.9rem;
+            }
+            footer {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Galeri Video Frans dan Fani</h1>
+        <!-- Kolom Pencarian -->
+        <input type="text" id="searchInput" placeholder="Cari video..." style="margin-top: 1rem; padding: 0.5rem; width: 80%; max-width: 400px;">
+        <!-- Menu Pengaturan dan Profil -->
+        <nav style="margin-top: 1rem; position: relative;">
+            <button id="settingsButton" style="margin-right: 1rem; padding: 0.5rem; border: none; background-color: #ff6f91; color: white; border-radius: 4px; cursor: pointer;">⚙️ Pengaturan</button>
+            <button id="profileButton" style="padding: 0.5rem; border: none; background-color: #ff6f91; color: white; border-radius: 4px; cursor: pointer;">👤 Profil</button>
+            <span id="adminIcon" style="position: absolute; top: 0; right: 0; cursor: pointer; font-size: 1.5rem;">👑</span>
+        </nav>
+    </header>
+
+    <!-- Modal Login Admin -->
+    <div id="adminLoginModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: white; padding: 1rem; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); z-index: 1000;">
+        <h2>Login Admin</h2>
+        <form id="adminLoginForm">
+            <input type="text" id="adminUsername" placeholder="Username Admin" required style="width: 100%; margin-bottom: 0.5rem; padding: 0.5rem;">
+            <input type="password" id="adminPassword" placeholder="Password Admin" required style="width: 100%; margin-bottom: 0.5rem; padding: 0.5rem;">
+            <button type="submit" style="width: 100%; padding: 0.5rem; background-color: #ff6f91; color: white; border: none; border-radius: 4px;">Login</button>
+        </form>
+        <button id="closeAdminLogin" style="margin-top: 1rem; padding: 0.5rem; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">Tutup</button>
+    </div>
+
+    <main>
+        <h2>Video Kami</h2>
+        <div class="video-container">
+            <div class="video-item">
+                <video controls>
+                    <source src="lv_7081192018315103489_20231102013250.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung video.
+                </video>
+                <p>Caption: Video pertama kami</p>
+            </div>
+            <div class="video-item">
+                <video controls>
+                    <source src="VID_134290416_043256_241.mp4" type="video/mp4">
+                    Browser Anda tidak mendukung video.
+                </video>
+                <p>Caption: Video kedua kami</p>
+            </div>
+        </div>
+
+        <h2>Unggah Video Anda</h2>
+        <input type="file" id="videoInput" accept="video/*">
+        <video id="videoPlayer" controls style="display: none;">
+            Browser Anda tidak mendukung video.
+        </video>
+
+        <!-- Tombol Like -->
+        <div id="likeSection" style="display: none;">
+            <button id="likeButton">❤️ Like</button>
+            <span id="likeCount">0</span> suka
+        </div>
+
+        <!-- Kolom Komentar -->
+        <div id="commentSection" style="display: none; margin-top: 1rem;">
+            <h3>Komentar</h3>
+            <textarea id="commentInput" placeholder="Tulis komentar..." style="width: 100%; padding: 0.5rem; margin-bottom: 0.5rem;"></textarea>
+            <button id="commentButton">Kirim</button>
+            <ul id="commentList" style="list-style: none; padding: 0; margin-top: 1rem;"></ul>
+        </div>
+
+        <script>
+            const searchInput = document.getElementById('searchInput');
+            const videoInput = document.getElementById('videoInput');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const likeButton = document.getElementById('likeButton');
+            const likeCount = document.getElementById('likeCount');
+            const likeSection = document.getElementById('likeSection');
+            const commentSection = document.getElementById('commentSection');
+            const commentInput = document.getElementById('commentInput');
+            const commentButton = document.getElementById('commentButton');
+            const commentList = document.getElementById('commentList');
+            const settingsButton = document.getElementById('settingsButton');
+            const profileButton = document.getElementById('profileButton');
+            const adminIcon = document.getElementById('adminIcon');
+            const adminLoginModal = document.getElementById('adminLoginModal');
+            const closeAdminLogin = document.getElementById('closeAdminLogin');
+            const adminLoginForm = document.getElementById('adminLoginForm');
+
+            let isAdmin = false; // Default user is not admin
+
+            adminIcon.addEventListener('click', () => {
+                adminLoginModal.style.display = 'block';
+            });
+
+            closeAdminLogin.addEventListener('click', () => {
+                adminLoginModal.style.display = 'none';
+            });
+
+            adminLoginForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+
+                const username = document.getElementById('adminUsername').value;
+                const password = document.getElementById('adminPassword').value;
+
+                if (username === 'frans' && password === '12345') {
+                    alert('Login Admin berhasil!');
+                    isAdmin = true;
+                    adminLoginModal.style.display = 'none';
+                    enableAdminFeatures();
+                } else {
+                    alert('Username atau password salah!');
+                }
+            });
+
+            // Add "Tambah Video" button for admin
+            const tambahVideoButton = document.createElement('button');
+            tambahVideoButton.id = 'tambahVideoButton';
+            tambahVideoButton.textContent = '➕ Tambah Video';
+            tambahVideoButton.style.marginRight = '1rem';
+            tambahVideoButton.style.padding = '0.5rem';
+            tambahVideoButton.style.border = 'none';
+            tambahVideoButton.style.backgroundColor = '#ff6f91';
+            tambahVideoButton.style.color = 'white';
+            tambahVideoButton.style.borderRadius = '4px';
+            tambahVideoButton.style.cursor = 'pointer';
+            tambahVideoButton.style.display = 'none'; // Hidden by default
+
+            // Add the button to the navigation bar
+            const nav = document.querySelector('nav');
+            nav.insertBefore(tambahVideoButton, settingsButton);
+
+            // Add "Pustaka Video" button for admin
+            const pustakaVideoButton = document.createElement('button');
+            pustakaVideoButton.id = 'pustakaVideoButton';
+            pustakaVideoButton.textContent = '📂 Pustaka Video';
+            pustakaVideoButton.style.marginRight = '1rem';
+            pustakaVideoButton.style.padding = '0.5rem';
+            pustakaVideoButton.style.border = 'none';
+            pustakaVideoButton.style.backgroundColor = '#ff6f91';
+            pustakaVideoButton.style.color = 'white';
+            pustakaVideoButton.style.borderRadius = '4px';
+            pustakaVideoButton.style.cursor = 'pointer';
+            pustakaVideoButton.style.display = 'none'; // Hidden by default
+
+            // Add the button to the navigation bar
+            nav.insertBefore(pustakaVideoButton, tambahVideoButton);
+
+            // Create Pustaka Video modal
+            const pustakaVideoModal = document.createElement('div');
+            pustakaVideoModal.id = 'pustakaVideoModal';
+            pustakaVideoModal.style.display = 'none';
+            pustakaVideoModal.style.position = 'fixed';
+            pustakaVideoModal.style.top = '50%';
+            pustakaVideoModal.style.left = '50%';
+            pustakaVideoModal.style.transform = 'translate(-50%, -50%)';
+            pustakaVideoModal.style.backgroundColor = 'white';
+            pustakaVideoModal.style.padding = '1rem';
+            pustakaVideoModal.style.borderRadius = '8px';
+            pustakaVideoModal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            pustakaVideoModal.style.zIndex = '1000';
+            pustakaVideoModal.style.maxHeight = '80%';
+            pustakaVideoModal.style.overflowY = 'auto';
+
+            pustakaVideoModal.innerHTML = `
+                <h2>Pustaka Video</h2>
+                <div id="pustakaVideoContainer" style="display: flex; flex-direction: column; gap: 1rem;"></div>
+                <button id="closePustakaVideo" style="margin-top: 1rem; padding: 0.5rem; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">Tutup</button>
+            `;
+
+            document.body.appendChild(pustakaVideoModal);
+
+            // Show "Tambah Video" button only for admin
+            function enableAdminFeatures() {
+                document.getElementById('settingsButton').style.display = 'inline-block';
+                document.getElementById('videoInput').style.display = 'block';
+                document.getElementById('tambahVideoButton').style.display = 'inline-block';
+                document.getElementById('pustakaVideoButton').style.display = 'inline-block';
+            }
+
+            // Event listener for "Tambah Video" button
+            tambahVideoButton.addEventListener('click', () => {
+                videoInput.click(); // Trigger file input for video upload
+            });
+
+            // Event listener for "Pustaka Video" button
+            pustakaVideoButton.addEventListener('click', () => {
+                pustakaVideoModal.style.display = 'block';
+                loadPustakaVideo();
+            });
+
+            document.getElementById('closePustakaVideo').addEventListener('click', () => {
+                pustakaVideoModal.style.display = 'none';
+            });
+
+            // Load videos into Pustaka Video
+            function loadPustakaVideo() {
+                const pustakaVideoContainer = document.getElementById('pustakaVideoContainer');
+                pustakaVideoContainer.innerHTML = ''; // Clear existing content
+
+                const videoItems = document.querySelectorAll('.video-item');
+                videoItems.forEach((item, index) => {
+                    const videoClone = item.cloneNode(true);
+
+                    // Add delete button
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = '🗑️ Hapus';
+                    deleteButton.style.marginTop = '0.5rem';
+                    deleteButton.style.padding = '0.5rem';
+                    deleteButton.style.border = 'none';
+                    deleteButton.style.backgroundColor = '#ff6f91';
+                    deleteButton.style.color = 'white';
+                    deleteButton.style.borderRadius = '4px';
+                    deleteButton.style.cursor = 'pointer';
+
+                    deleteButton.addEventListener('click', () => {
+                        videoItems[index].remove(); // Remove from main container
+                        videoClone.remove(); // Remove from Pustaka Video
+                    });
+
+                    videoClone.appendChild(deleteButton);
+                    pustakaVideoContainer.appendChild(videoClone);
+                });
+            }
+
+            // Disable admin features for regular users
+            if (!isAdmin) {
+                document.getElementById('settingsButton').style.display = 'none';
+                document.getElementById('videoInput').style.display = 'none';
+            }
+
+            // Load likes from localStorage
+            let likes = localStorage.getItem('likes') || 0;
+            likeCount.textContent = likes;
+
+            // Ensure all videos have like and comment functionality
+            function addLikeAndCommentFeatures(videoItem) {
+                const actionsContainer = document.createElement('div');
+                actionsContainer.style.display = 'flex';
+                actionsContainer.style.justifyContent = 'space-between';
+                actionsContainer.style.alignItems = 'center';
+
+                const likeButton = document.createElement('button');
+                likeButton.textContent = '❤️';
+                likeButton.style.border = 'none';
+                likeButton.style.background = 'none';
+                likeButton.style.cursor = 'pointer';
+
+                const likeCount = document.createElement('span');
+                likeCount.textContent = '0';
+
+                likeButton.addEventListener('click', () => {
+                    const currentLikes = parseInt(likeCount.textContent, 10);
+                    likeCount.textContent = currentLikes + 1;
+                });
+
+                const commentButton = document.createElement('button');
+                commentButton.textContent = '💬';
+                commentButton.style.border = 'none';
+                commentButton.style.background = 'none';
+                commentButton.style.cursor = 'pointer';
+
+                commentButton.addEventListener('click', () => {
+                    const comment = prompt('Tulis komentar Anda:');
+                    if (comment) {
+                        const commentList = videoItem.querySelector('ul') || document.createElement('ul');
+                        commentList.style.listStyle = 'none';
+                        commentList.style.padding = '0';
+                        const commentItem = document.createElement('li');
+                        commentItem.textContent = comment;
+                        commentList.appendChild(commentItem);
+                        videoItem.appendChild(commentList);
+                    }
+                });
+
+                actionsContainer.appendChild(likeButton);
+                actionsContainer.appendChild(likeCount);
+                actionsContainer.appendChild(commentButton);
+
+                videoItem.appendChild(actionsContainer);
+            }
+
+            // Apply like and comment features to existing videos
+            document.querySelectorAll('.video-item').forEach(videoItem => {
+                addLikeAndCommentFeatures(videoItem);
+            });
+
+            // Update video upload logic to include like and comment features
+            videoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const videoURL = URL.createObjectURL(file);
+
+                    // Create a new video item
+                    const videoItem = document.createElement('div');
+                    videoItem.className = 'video-item';
+
+                    const videoElement = document.createElement('video');
+                    videoElement.controls = true;
+                    videoElement.src = videoURL;
+
+                    const caption = document.createElement('p');
+                    caption.textContent = 'Caption: Video baru';
+
+                    videoItem.appendChild(videoElement);
+                    videoItem.appendChild(caption);
+
+                    addLikeAndCommentFeatures(videoItem);
+
+                    videoContainer.appendChild(videoItem);
+                }
+            });
+
+            // Pencarian video (dummy implementation for now)
+            searchInput.addEventListener('input', (event) => {
+                const query = event.target.value.toLowerCase();
+                if (query && videoPlayer.style.display === 'block') {
+                    const caption = 'video kami'; // Replace with actual caption logic
+                    if (!caption.toLowerCase().includes(query)) {
+                        videoPlayer.style.display = 'none';
+                        likeSection.style.display = 'none';
+                        commentSection.style.display = 'none';
+                    } else {
+                        videoPlayer.style.display = 'block';
+                        likeSection.style.display = 'block';
+                        commentSection.style.display = 'block';
+                    }
+                }
+            });
+
+            settingsButton.addEventListener('click', () => {
+                alert('Menu Pengaturan akan ditambahkan di sini.');
+            });
+
+            profileButton.addEventListener('click', () => {
+                alert('Menu Profil akan ditambahkan di sini.');
+            });
+
+            const profileModal = document.createElement('div');
+            profileModal.style.display = 'none';
+            profileModal.style.position = 'fixed';
+            profileModal.style.top = '50%';
+            profileModal.style.left = '50%';
+            profileModal.style.transform = 'translate(-50%, -50%)';
+            profileModal.style.backgroundColor = 'white';
+            profileModal.style.padding = '1rem';
+            profileModal.style.borderRadius = '8px';
+            profileModal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            profileModal.style.zIndex = '1000';
+
+            profileModal.style.width = '100%';
+            profileModal.style.height = '100%';
+            profileModal.style.top = '0';
+            profileModal.style.left = '0';
+            profileModal.style.transform = 'none';
+            profileModal.style.padding = '2rem';
+
+            const backButton = document.createElement('button');
+            backButton.textContent = '⬅️ Kembali ke Halaman Awal';
+            backButton.style.position = 'absolute';
+            backButton.style.top = '1rem';
+            backButton.style.left = '1rem';
+            backButton.style.padding = '0.5rem';
+            backButton.style.border = 'none';
+            backButton.style.backgroundColor = '#ff6f91';
+            backButton.style.color = 'white';
+            backButton.style.borderRadius = '4px';
+            backButton.style.cursor = 'pointer';
+
+            backButton.addEventListener('click', () => {
+                profileModal.style.display = 'none';
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
+            });
+
+            profileModal.appendChild(backButton);
+
+            profileModal.innerHTML += `
+                <h2>Profil</h2>
+                <img id="profilePhoto" src="" alt="Foto Profil" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 1rem;">
+                <p><strong>Bio:</strong> <span id="profileBio">Belum diatur</span></p>
+                <p><strong>Status Hubungan:</strong> <span id="relationshipStatus">Belum diatur</span></p>
+                <p><strong>Jumlah Video:</strong> <span id="videoCount">0</span></p>
+                <p><strong>Jumlah Suka:</strong> <span id="totalLikes">0</span></p>
+                <p><strong>Jumlah Komentar:</strong> <span id="totalComments">0</span></p>
+                <button id="closeProfileButton" style="margin-top: 1rem; padding: 0.5rem; border: none; background-color: #ff6f91; color: white; border-radius: 4px; cursor: pointer;">Tutup</button>
+            `;
+
+            document.body.appendChild(profileModal);
+
+            profileButton.addEventListener('click', () => {
+                const profilePhoto = document.getElementById('profilePhoto');
+                const profileBio = document.getElementById('profileBio');
+                const relationshipStatus = document.getElementById('relationshipStatus');
+                const videoCount = document.getElementById('videoCount');
+                const totalLikes = document.getElementById('totalLikes');
+                const totalComments = document.getElementById('totalComments');
+
+                // Set default values or fetch from localStorage
+                profilePhoto.src = localStorage.getItem('profilePhoto') || 'https://via.placeholder.com/100';
+                profileBio.textContent = localStorage.getItem('profileBio') || 'Belum diatur';
+                relationshipStatus.textContent = localStorage.getItem('relationshipStatus') || 'Belum diatur';
+                videoCount.textContent = localStorage.getItem('videoCount') || '0';
+                totalLikes.textContent = localStorage.getItem('likes') || '0';
+                totalComments.textContent = commentList.children.length;
+
+                profileModal.style.display = 'block';
+            });
+
+            document.getElementById('closeProfileButton').addEventListener('click', () => {
+                profileModal.style.display = 'none';
+            });
+
+            const profilePhotoInput = document.createElement('input');
+            profilePhotoInput.type = 'file';
+            profilePhotoInput.accept = 'image/*';
+            profilePhotoInput.style.display = 'none';
+
+            document.body.appendChild(profilePhotoInput);
+
+            profilePhotoInput.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const profilePhoto = document.getElementById('profilePhoto');
+                        profilePhoto.src = e.target.result;
+                        localStorage.setItem('profilePhoto', e.target.result);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            const profilePhoto = document.getElementById('profilePhoto');
+            profilePhoto.addEventListener('click', () => {
+                profilePhotoInput.click();
+            });
+
+            const profileBioElement = document.getElementById('profileBio');
+            const relationshipStatusElement = document.getElementById('relationshipStatus');
+
+            profileBioElement.addEventListener('click', () => {
+                const newBio = prompt('Masukkan bio baru:', profileBioElement.textContent);
+                if (newBio !== null) {
+                    profileBioElement.textContent = newBio;
+                    localStorage.setItem('profileBio', newBio);
+                }
+            });
+
+            relationshipStatusElement.addEventListener('click', () => {
+                const newStatus = prompt('Masukkan status hubungan baru:', relationshipStatusElement.textContent);
+                if (newStatus !== null) {
+                    relationshipStatusElement.textContent = newStatus;
+                    localStorage.setItem('relationshipStatus', newStatus);
+                }
+            });
+
+            // Infinite scrolling logic
+            const videoContainer = document.querySelector('.video-container');
+
+            window.addEventListener('scroll', () => {
+                const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+                // Check if user scrolled near the bottom of the page
+                if (scrollTop + clientHeight >= scrollHeight - 5) {
+                    // Clone all video items and append them to the container
+                    const videoItems = document.querySelectorAll('.video-item');
+                    videoItems.forEach(item => {
+                        const clone = item.cloneNode(true);
+                        videoContainer.appendChild(clone);
+                    });
+                }
+
+                // Auto-play and stop videos on scroll
+                const videos = document.querySelectorAll('video');
+                videos.forEach(video => {
+                    const rect = video.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                });
+            });
+
+            // Add "Galeri Foto" button
+            const galeriFotoButton = document.createElement('button');
+            galeriFotoButton.id = 'galeriFotoButton';
+            galeriFotoButton.textContent = '🖼️ Galeri Foto';
+            galeriFotoButton.style.marginRight = '1rem';
+            galeriFotoButton.style.padding = '0.5rem';
+            galeriFotoButton.style.border = 'none';
+            galeriFotoButton.style.backgroundColor = '#ff6f91';
+            galeriFotoButton.style.color = 'white';
+            galeriFotoButton.style.borderRadius = '4px';
+            galeriFotoButton.style.cursor = 'pointer';
+
+            // Add the button to the navigation bar
+            nav.insertBefore(galeriFotoButton, profileButton);
+
+            // Create Galeri Foto modal
+            const galeriFotoModal = document.createElement('div');
+            galeriFotoModal.id = 'galeriFotoModal';
+            galeriFotoModal.style.display = 'none';
+            galeriFotoModal.style.position = 'fixed';
+            galeriFotoModal.style.top = '50%';
+            galeriFotoModal.style.left = '50%';
+            galeriFotoModal.style.transform = 'translate(-50%, -50%)';
+            galeriFotoModal.style.backgroundColor = 'white';
+            galeriFotoModal.style.padding = '1rem';
+            galeriFotoModal.style.borderRadius = '8px';
+            galeriFotoModal.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.1)';
+            galeriFotoModal.style.zIndex = '1000';
+            galeriFotoModal.style.maxHeight = '80%';
+            galeriFotoModal.style.overflowY = 'auto';
+
+            galeriFotoModal.style.width = '100%';
+            galeriFotoModal.style.height = '100%';
+            galeriFotoModal.style.top = '0';
+            galeriFotoModal.style.left = '0';
+            galeriFotoModal.style.transform = 'none';
+            galeriFotoModal.style.padding = '2rem';
+
+            const backButtonGaleri = backButton.cloneNode(true);
+            backButtonGaleri.addEventListener('click', () => {
+                galeriFotoModal.style.display = 'none';
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
+            });
+
+            galeriFotoModal.appendChild(backButtonGaleri);
+
+            galeriFotoModal.innerHTML += `
+                <h2>Galeri Foto</h2>
+                <div id="galeriFotoContainer" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;"></div>
+                <input type="file" id="fotoInput" accept="image/*" style="display: none;">
+                <button id="closeGaleriFoto" style="margin-top: 1rem; padding: 0.5rem; background-color: #ccc; border: none; border-radius: 4px; cursor: pointer;">Tutup</button>
+            `;
+
+            document.body.appendChild(galeriFotoModal);
+
+            const fotoInput = document.getElementById('fotoInput');
+
+            // Show "Galeri Foto" button for all users
+            galeriFotoButton.addEventListener('click', () => {
+                galeriFotoModal.style.display = 'block';
+            });
+
+            document.getElementById('closeGaleriFoto').addEventListener('click', () => {
+                galeriFotoModal.style.display = 'none';
+            });
+
+            // Allow admin to upload photos
+            if (isAdmin) {
+                const uploadFotoButton = document.createElement('button');
+                uploadFotoButton.textContent = '➕ Tambah Foto';
+                uploadFotoButton.style.marginTop = '1rem';
+                uploadFotoButton.style.padding = '0.5rem';
+                uploadFotoButton.style.border = 'none';
+                uploadFotoButton.style.backgroundColor = '#ff6f91';
+                uploadFotoButton.style.color = 'white';
+                uploadFotoButton.style.borderRadius = '4px';
+                uploadFotoButton.style.cursor = 'pointer';
+
+                galeriFotoModal.appendChild(uploadFotoButton);
+
+                uploadFotoButton.addEventListener('click', () => {
+                    fotoInput.click();
+                });
+
+                fotoInput.addEventListener('change', (event) => {
+                    const file = event.target.files[0];
+                    if (file) {
+                        const fotoURL = URL.createObjectURL(file);
+
+                        const fotoItem = document.createElement('div');
+                        fotoItem.style.position = 'relative';
+
+                        const imgElement = document.createElement('img');
+                        imgElement.src = fotoURL;
+                        imgElement.style.width = '150px';
+                        imgElement.style.height = '150px';
+                        imgElement.style.objectFit = 'cover';
+                        imgElement.style.borderRadius = '8px';
+
+                        const likeButton = document.createElement('button');
+                        likeButton.textContent = '❤️';
+                        likeButton.style.position = 'absolute';
+                        likeButton.style.bottom = '5px';
+                        likeButton.style.left = '5px';
+                        likeButton.style.border = 'none';
+                        likeButton.style.background = 'none';
+                        likeButton.style.cursor = 'pointer';
+                        likeButton.style.color = 'red';
+
+                        const likeCount = document.createElement('span');
+                        likeCount.textContent = '0';
+                        likeCount.style.position = 'absolute';
+                        likeCount.style.bottom = '5px';
+                        likeCount.style.left = '30px';
+                        likeCount.style.color = 'black';
+
+                        likeButton.addEventListener('click', () => {
+                            const currentLikes = parseInt(likeCount.textContent, 10);
+                            likeCount.textContent = currentLikes + 1;
+                        });
+
+                        fotoItem.appendChild(imgElement);
+                        fotoItem.appendChild(likeButton);
+                        fotoItem.appendChild(likeCount);
+
+                        document.getElementById('galeriFotoContainer').appendChild(fotoItem);
+                    }
+                });
+            }
+
+            // Add initial photos to the gallery
+            const initialPhotos = [
+                'IMG_20250105_201958.jpg',
+                'IMG_20250105_202026.jpg',
+                'IMG_20250105_202051.jpg',
+                'IMG_20250105_202114.jpg',
+                'IMG_20250105_203007_743.webp',
+                'IMG_20250105_203007_923.webp',
+                'IMG_20250105_203008_172.webp',
+                'IMG_20250105_203008_295.webp'
+            ];
+
+            const galeriFotoContainer = document.getElementById('galeriFotoContainer');
+
+            initialPhotos.forEach(photo => {
+                const fotoItem = document.createElement('div');
+                fotoItem.style.position = 'relative';
+
+                const imgElement = document.createElement('img');
+                imgElement.src = photo;
+                imgElement.style.width = '150px';
+                imgElement.style.height = '150px';
+                imgElement.style.objectFit = 'cover';
+                imgElement.style.borderRadius = '8px';
+
+                const likeButton = document.createElement('button');
+                likeButton.textContent = '❤️';
+                likeButton.style.position = 'absolute';
+                likeButton.style.bottom = '5px';
+                likeButton.style.left = '5px';
+                likeButton.style.border = 'none';
+                likeButton.style.background = 'none';
+                likeButton.style.cursor = 'pointer';
+                likeButton.style.color = 'red';
+
+                const likeCount = document.createElement('span');
+                likeCount.textContent = '0';
+                likeCount.style.position = 'absolute';
+                likeCount.style.bottom = '5px';
+                likeCount.style.left = '30px';
+                likeCount.style.color = 'black';
+
+                likeButton.addEventListener('click', () => {
+                    const currentLikes = parseInt(likeCount.textContent, 10);
+                    likeCount.textContent = currentLikes + 1;
+                });
+
+                fotoItem.appendChild(imgElement);
+                fotoItem.appendChild(likeButton);
+                fotoItem.appendChild(likeCount);
+
+                galeriFotoContainer.appendChild(fotoItem);
+            });
+
+            // Add tab navigation system
+            const mainContent = document.querySelector('main');
+
+            // Create sections for each tab
+            const profileSection = document.createElement('section');
+            profileSection.id = 'profileSection';
+            profileSection.style.display = 'none';
+            profileSection.innerHTML = `
+                <h2>Profil</h2>
+                <img id="profilePhoto" src="https://via.placeholder.com/100" alt="Foto Profil" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 1rem;">
+                <p><strong>Bio:</strong> <span id="profileBio">Belum diatur</span></p>
+                <p><strong>Status Hubungan:</strong> <span id="relationshipStatus">Belum diatur</span></p>
+                <button id="editProfileButton" style="margin-top: 1rem; padding: 0.5rem; background-color: #ff6f91; color: white; border: none; border-radius: 4px; cursor: pointer;">Edit Profil</button>
+            `;
+
+            const galeriFotoSection = document.createElement('section');
+            galeriFotoSection.id = 'galeriFotoSection';
+            galeriFotoSection.style.display = 'none';
+            galeriFotoSection.innerHTML = `
+                <h2>Galeri Foto</h2>
+                <div id="galeriFotoContainer" style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;"></div>
+                <input type="file" id="fotoInput" accept="image/*" style="display: none;">
+            `;
+
+            const videoSection = document.querySelector('.video-container');
+            videoSection.id = 'videoSection';
+
+            // Append sections to main content
+            mainContent.appendChild(profileSection);
+            mainContent.appendChild(galeriFotoSection);
+
+            // Tab navigation logic
+            function showSection(sectionId) {
+                document.querySelectorAll('main > section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById(sectionId).style.display = 'block';
+            }
+
+            // Event listeners for navigation buttons
+            profileButton.addEventListener('click', () => {
+                showSection('profileSection');
+            });
+
+            galeriFotoButton.addEventListener('click', () => {
+                showSection('galeriFotoSection');
+            });
+
+            settingsButton.addEventListener('click', () => {
+                showSection('videoSection');
+            });
+
+            // Default to video section
+            showSection('videoSection');
+
+            pustakaVideoModal.style.width = '100%';
+            pustakaVideoModal.style.height = '100%';
+            pustakaVideoModal.style.top = '0';
+            pustakaVideoModal.style.left = '0';
+            pustakaVideoModal.style.transform = 'none';
+            pustakaVideoModal.style.padding = '2rem';
+
+            const backButtonPustaka = backButton.cloneNode(true);
+            backButtonPustaka.addEventListener('click', () => {
+                pustakaVideoModal.style.display = 'none';
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE, and Opera
+            });
+
+            pustakaVideoModal.appendChild(backButtonPustaka);
+        </script>
+    </main>
+    <footer>
+        <p>&copy; 2025 Galeri Video. Dibuat oleh Frans Manitori.</p>
+    </footer>
+</body>
+</html>
