@@ -52,4 +52,23 @@
     footer {
         font-size: 0.7rem;
     }
+    .video-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Ensure videos are responsive */
+video {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Maintain aspect ratio for videos */
+.video-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
 }
